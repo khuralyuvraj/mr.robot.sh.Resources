@@ -37,7 +37,7 @@ Forensics 6:
 Forensics 7:
     I used 'dnf list --installed | grep remote' to list all the 'remote' related packages.
 
-    Extra Vulnerability linking to the forensic:
+    Extra Vulnerabilities linking to the forensic:
         I used 'dnf remove gnome-remote-desktop* -y' to remove all the gnome-remote-desktop installs.
         
         I used 'rm -rf /var/spool/cron/fred' to remove Fred's cronjob. And I used 'rm -rf .config/autostart/xdg-desktop-portal-gnome.desktop' to stop it from autostarting.
