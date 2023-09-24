@@ -1,0 +1,56 @@
+Forensics 1:
+    I located the .ssh directory in the user's home directory, and then used 'sudo ls -Rla .ssh/' to find the authorized_keys file's owner (nobody). Then I looked at the third row of the /etc/passwd file to find the uid of 'nobody', the owner.
+
+    Extra Vulnerability linking to the forensic:
+        Since all files in the .ssh directory are supposed to be owned by the user who's home directory the .ssh directory is in. I used 'sudo chown -R fred .ssh/' to make fred the owner of all files in the .ssh directory, then I changed the owner group to fred using the command 'sudo chgrp -R fred .ssh/'. And I changed the perms so that only the owner of the files can access them, using 'sudo chmod -R 700 .ssh/'.
+
+Forensics 2:
+    I checked the system for any other browsers and came across Chromium, so I opened it and used 'Alt+F2' and typed 'lg' (You can close it by opening any external link), and then open the Window tab to see the fedora package name of the apps open. In this case it was 'chromium-browser'.
+
+    Extra Vulnerability linking to the forensic:
+        Since Firefox is the only authorized software for the VM, I deleted Chromium with 'sudo dnf remove chromium-common-105.0.5195.125-2.fc36.x86_64 -y'
+
+Forensics 3:
+    Elasticsearch is an online utility so I opened the browser's history and found the site. Then I logged in with the convieniently saved password in the browser, and I was able to get the answer.
+
+    Extra Vulnerability linking to the forensic:
+        I used 'dnf remove kibana* elasticsearch* -y' to delete kibana and elasticsearch.
+
+Forensics 4:
+    I used 'rg --binary 'ifconfig.me'' in the bin directory to list all the binary files that mention the host 'ifconfig.me' since it was mentioned in the forensic. Then I used 'md5sum /bin/curl /bin/wget' to find the MD5 Checksum of the files.
+
+    Extra Vulnerability linking to the forensic:
+        I used 'rm -rf /bin/curl /bin/wget' to remove the compromised binary files.
+
+Forensics 5:
+    I used 'cat /etc/passwd | grep -v /nologin' to remove the most common entry in the /etc/passwd file [The Forensics Question is WRONG!! It should be asking for the shell path not the user, resulting in an answer of '/sbin/login']
+
+    Extra Vulnerability linking to the forensic:
+        I used 'userdel -f systemd-root' (which makes sense because there shouldn't be any more than one root account.)
+
+Forensics 6:
+    I used 'docker ps' to list all the Docker containers.
+
+    Extra Vulnerability linking to the forensic:
+        I used 'dnf remove docker*' to remove the docker installation. And I used 'rm -rf /opt/containerd /root/Dockerfile /run/docker' to remove all docker files that were left behind.
+
+Forensics 7:
+    I used 'dnf list --installed | grep remote' to list all the 'remote' related packages.
+
+    Extra Vulnerability linking to the forensic:
+        I used 'dnf remove gnome-remote-desktop* -y' to remove all the gnome-remote-desktop installs.
+        
+        I used 'rm -rf /var/spool/cron/fred' to remove Fred's cronjob. And I used 'rm -rf .config/autostart/xdg-desktop-portal-gnome.desktop' to stop it from autostarting.
+
+        I used 'grep -R 'gnome-remote-desktop'' to find all files related to gnome-remote-desktop, then I used 'systemctl disable systemd', 'systemctl --user disable systemd' and then 'rm -rf /usr/lib/systemd /home/fred/.config/systemd'
+
+
+Other Points:
+
+    Removing restricted bash shell:
+        I used 'find / -iname *rbash* 2>/dev/null' to find all files related to rbash, then I used 'rm -rf /usr/bin/rbash /usr/share/doc/bash/RBASH /var/lib/flatpak/runtime/org.fedoraproject.Platform/x86_64/f37/4e0d584c1eea386081a50b4801f75e7cfd903894b1cc6e7b85db6aabb91c4060/files/share/doc/bash/RBASH' to remove those files responsible for restricting the bash shell. And then I changed fred's default shell to '/bin/bash' in '/etc/passwd'
+
+    Fixing dnf repositories:
+        I used 'ls -la /etc/yum.repos.d/' to list the files in the repositories directory and then compare it to a normal install directory to find the suspicious files. Then I used 'rm -rf /etc/yum.repos.d/docker-ce.repo /etc/yum.repos.d/elasticsearch.repo /etc/yum.repos.d/fedorarepo.repo /etc/yum.repos.d/home_fred_fedorarepo.repo' to remove those suspicious repositories.
+
+    
